@@ -32,6 +32,68 @@ LD_Motif_mat = LD_M_seurat[['RNA']]@data
 NMDA_Motif_mat = NMDA_M_seurat[['RNA']]@data
 
 ######
+
+Get_corr_gene_motif <- function(motif_matrix,gene_matrix,Fish_All_motifs_table_short){
+    ########
+    colnames(motif_matrix) <- gsub("#",'_',colnames(motif_matrix))
+    rownames(motif_matrix) <- gsub("-",'_',rownames(motif_matrix))
+    ########
+    print(head(colnames(motif_matrix)))
+    print(head(rownames(motif_matrix)))
+    print(head(colnames(gene_matrix)))
+    print(head(rownames(gene_matrix)))
+    ########
+    k = which(Matrix::rowSums(gene_matrix) < 10)
+    if(length(k) > 1){
+        gene_matrix = gene_matrix[-k,]
+    }
+    rownames(gene_matrix) <- sapply(strsplit(rownames(gene_matrix),split='~~'),function(x) x[[2]])
+    ######## clean cols #####
+    cells = colnames(gene_matrix)[which(colnames(gene_matrix) %in% colnames(motif_matrix) == T)]
+    gene_matrix_cl = gene_matrix[,which(colnames(gene_matrix) %in% cells == T)]
+    motif_matrix_cl = motif_matrix[,which(colnames(motif_matrix) %in% cells == T)]
+    #######
+    gM = match(cells,colnames(gene_matrix_cl))
+    gene_matrix_cl = gene_matrix_cl[,gM]
+    mM = match(cells,colnames(motif_matrix_cl))
+    motif_matrix_cl = motif_matrix_cl[,mM]
+    ########
+    all.equal(colnames(gene_matrix_cl),colnames(motif_matrix_cl))
+    ########
+    Fish_All_motifs_table_short$Cor = 0
+    ########
+    Fish_All_motifs_table_short_cl = Fish_All_motifs_table_short[which(Fish_All_motifs_table_short$Gene %in% rownames(gene_matrix_cl) == T),]
+    Fish_All_motifs_table_short_cl$Cor = 0
+    ########
+    ########
+    library(parallel)
+    cl <- makeCluster(30)
+    cor_res = parApply(cl,Fish_All_motifs_table_short_cl,1,cor_functon,motif_matrix_cl,gene_matrix_cl)
+    stopCluster(cl)
+    #########
+    Fish_All_motifs_table_short_cl$Cor = cor_res
+    return(Fish_All_motifs_table_short_cl)
+}
+
+
+cor_functon <- function(x,motif_matrix_cl,gene_matrix_cl){
+    tmp1 = x[1]
+    tmp2 = x[2]
+    #######
+    vector1 = which(rownames(motif_matrix_cl) == tmp1)
+    vector2 = which(rownames(gene_matrix_cl) == tmp2)
+    if(length(vector1) == 1 & length(vector2) == 1){
+            v1 = motif_matrix_cl[vector1,]
+            v2 = gene_matrix_cl[vector2,]
+            ### all.equal(names(v1),names(v2))
+            Cor = cor(v1,v2,method = c("spearman"))
+            ###
+            return(Cor)
+    }else{
+        Cor = 0
+        return(Cor)
+    }
+}
 LD_Corr_RNA_Motif_Res = Get_corr_gene_motif(LD_Motif_mat,LD_RNA_mat,Fish_All_motifs_table_short)
 NMDA_Corr_RNA_Motif_Res = Get_corr_gene_motif(NMDA_Motif_mat,NMDA_RNA_mat,Fish_All_motifs_table_short)
 
