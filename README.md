@@ -107,6 +107,19 @@ colnames(NMDA_Corr_RNA_Motif_Res)[c(3)] <- paste("Gene_Motif",colnames(NMDA_Corr
 LD_NMDA_TF_activity <- rbind(LD_Corr_RNA_Motif_Res,NMDA_Corr_RNA_Motif_Res)
 library(writexl)
 write_xlsx(LD_NMDA_TF_activity, path = "LD_NMDA_TFs_gene_motif_corr.xlsx")
+
+
+#######
+load("LD_Corr_RNA_Motif_Res_July23")
+load("NMDA_Corr_RNA_Motif_Res_July23")
+
+colnames(LD_Corr_RNA_Motif_Res)[c(3)] <- paste("Gene_Motif",colnames(LD_Corr_RNA_Motif_Res)[c(3)],sep='_') 
+colnames(NMDA_Corr_RNA_Motif_Res)[c(3)] <- paste("Gene_Motif",colnames(NMDA_Corr_RNA_Motif_Res)[c(3)],sep='_') 
+
+
+LD_NMDA_TF_activity <- rbind(LD_Corr_RNA_Motif_Res,NMDA_Corr_RNA_Motif_Res)
+save(LD_NMDA_TF_activity,file='LD_NMDA_TF_activity_July23')
+
 ```
 
 
@@ -431,6 +444,154 @@ save(NMDA_PtoG_Ann,file='NMDA_PtoG_Ann_July23')
 
 ### STEP3: Predicting TF Binding Sites
 ``` r
+#### select the activator and repressor motifs which passed the cutoff ####
+#### cutoff = 0.05 #####
+setwd("/zp1/data/plyu3/Fish_muti_omic_dev/merge_ATAC")
+
+load("LD_NMDA_TF_activity_July23")
+load("InjuryDev_TF_activity_July23")
+
+
+Get_all_need_Motif_tag <- function(x,y,cutoff=0.05){
+    x = rbind(x,y)
+    ########
+    k1 = which(x$Gene_Motif_Cor > cutoff | x$Gene_Motif_Cor < -cutoff)
+    #########
+    x_cl = x[k1,]
+    #########
+    k3 = which(x_cl$Gene_Motif_Cor > cutoff)
+    k4 = which(x_cl$Gene_Motif_Cor < -cutoff)
+    x_cl$class = 'Unknown'
+    x_cl$class[k3] = 'pos'
+    x_cl$class[k4] = 'neg'
+    #########
+    print(length(x_cl$ID[!duplicated(x_cl$ID)]))
+    x_cl[which(x_cl$Gene == 'ascl1a'),]
+    return(x_cl)
+}
+
+
+Globle_need_Motif = Get_all_need_Motif_tag(LD_NMDA_TF_activity,InjuryDev_TF_activity,0.05)
+
+####
+setwd("/zp1/data/plyu3/Fish_muti_omic_dev/merge_ATAC")
+
+load(file='Dev_PtoG_Ann_July23')
+load(file='Injury_PtoG_Ann_July23')
+load(file='LD_PtoG_Ann_July23')
+load(file='NMDA_PtoG_Ann_July23')
+
+x1 = Dev_PtoG_Ann
+x2 = Injury_PtoG_Ann
+x3 = LD_PtoG_Ann
+x4 = NMDA_PtoG_Ann
+
+Get_all_need_Peak_tag <- function(x1,x2,x3,x4){
+    all_tab = rbind(x1,x2,x3,x4)
+    ######
+    all_peak = all_tab$Peak
+    all_peak = all_peak[!duplicated(all_peak)]
+    ######
+    return(all_peak)
+}
+
+########
+######## merge all peak regions to match TF binding mtoifs ##########
+######## Globle_need_Peak is the union regions of all these peaks ####
+Globle_need_Peak = Get_all_need_Peak_tag(x1,x2,x3,x4)
+######## 
+
+
+setwd("/zp1/data/plyu3/Fish_muti_omic_dev/merge_ATAC")
+
+#### Fish_combined_motifs is the PWMList which stored Fish PMW matrix #####
+load(file='Fish_combined_motifs') ### Fish_combined ####
+
+#### Fish_combined
+#### PWMatrixList of length 9155
+#### names(9155): M00001 M00002 M00004 ... M11389_2.00 M11390_2.00 M11491_2.00 
+
+Merge_peaks <- function(x,extend = 150){
+    library(GenomicRanges)
+    x = GRanges(x)
+    x = split(x,seqnames(x))
+    ######
+    for(i in 1:length(x)){
+        tmp_x = x[[i]]
+        tmp_x = sort(tmp_x)
+        start(tmp_x) = start(tmp_x) - extend
+        end(tmp_x) = end(tmp_x) + extend
+        #####
+        start(tmp_x[1]) = start(tmp_x[1]) + extend
+        end(tmp_x[length(tmp_x)]) = end(tmp_x[length(tmp_x)]) - extend
+        ######
+        x[[i]] = tmp_x
+    }
+    return(x)
+}
+
+Merge_GRlist <- function(x_list){
+    out = x_list[[1]]
+    for(i in 2:length(x_list)){
+        out = c(out,x_list[[i]])
+    }
+    return(out)
+}
+
+
+Match_motifs <- function(Globle_need_Peak,Globle_need_Motif,Fish_combined){
+    ############
+    Globle_need_Peak_1 = Merge_peaks(Globle_need_Peak,extend=150)
+    ############
+    ####Globle_need_Peak_2 = Merge_GRlist(Globle_need_Peak_1)
+    ############ filter the Fish_combined #####
+    k = which(names(Fish_combined) %in% Globle_need_Motif$ID == T)
+    Fish_combined_cl = Fish_combined[k]
+    ############
+    library(parallel)
+    cl <- makeCluster(35)
+    ############
+    footprint_Motif_list = parLapply(cl,Fish_combined_cl,Find_Motif,Globle_need_Peak_2=Globle_need_Peak_2)
+    stopCluster(cl)
+    ############
+    head(names(footprint_Motif_list))
+    ###########
+    return(footprint_Motif_list)
+    ###########
+}
+
+Find_Motif <- function(x,Globle_need_Peak_2){
+    library(motifmatchr)
+    library("BSgenome.Drerio.UCSC.danRer11")
+    footprint = matchMotifs(x,Globle_need_Peak_2,genome = BSgenome.Drerio.UCSC.danRer11,out='positions',p.cutoff = 5e-05)
+    ######
+    footprint_tab = data.frame(footprint[[1]])
+    ######
+    return(footprint_tab)
+}
+
+#### 
+Globle_motif_footprint <- Match_motifs(Globle_need_Peak,Globle_need_Motif,Fish_combined)
+####
+save(Globle_motif_footprint,file='Globle_motif_footprint_July23')
+
+
+
+
+#### Next using LD or NMDA footprint to filter motif binding sites ######
+#### Next load the corrected ATACseq signal calculated by TOBIAS ########
+
+#### The pipline using TOBIAS please see: https://github.com/Pinlyu3/IReNA-v2 
+#### STEP4: Predicting cell-type specific TFs binding in cis-regulatory elements
+ 
+
+
+
+
+
+
+
+
 
 ```
 
@@ -574,10 +735,10 @@ Combined_all_things <- function(GG_network,PG_cor,TP_cor,Foot){
 }
 
 
-load("Globle_motif_cleanedByNMDA")
-load("LD_NMDA_TF_activity_July23")
-load("NMDA_PtoG_Ann_July23")
-load("NMDA_network")
+load("Globle_motif_cleanedByNMDA") ### from Step3 ####
+load("LD_NMDA_TF_activity_July23") ### from Step1 ####
+load("NMDA_PtoG_Ann_July23") ### from Step2 ####
+load("NMDA_network") ### from Step4 ####
 
 GG_network = NMDA_network
 PG_cor = NMDA_PtoG_Ann
@@ -588,10 +749,10 @@ NMDA_GRNs = Combined_all_things(GG_network,PG_cor,TP_cor,Foot)
 save(NMDA_GRNs,file='NMDA_GRNs_July23')
 
 
-load("Globle_motif_cleanedByLD")
-load("LD_NMDA_TF_activity_July23")
-load("LD_PtoG_Ann_July23")
-load("LD_network")
+load("Globle_motif_cleanedByLD") ### from Step3 ####
+load("LD_NMDA_TF_activity_July23") ### from Step1 ####
+load("LD_PtoG_Ann_July23") ### from Step2 ####
+load("LD_network") ### from Step4 ####
 
 GG_network = LD_network
 PG_cor = LD_PtoG_Ann
