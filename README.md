@@ -8,7 +8,7 @@ We use LD and NMDA scRNAseq/scATACseq datasets as example datasets.
 
 All example files can be downloaded in the following link: [Datasets](https://drive.google.com/drive/folders/1yYuWGWyFog8xhMxbpK26uhdEOh620sz3?usp=sharing)
 
-All functions are in the function folder
+All functions are in the function folder.
 
 ### STEP1: Inferring activators and repressors by expression and motif activity
 ``` r
