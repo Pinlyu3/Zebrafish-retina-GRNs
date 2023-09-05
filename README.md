@@ -4,11 +4,14 @@ The test codes for constructing GRNs of MG cell groups between LD and NMDA condi
 
 ### System requirements ###
 1.The code can be run on any operating system that has R installed.
-2.ArchR(v1.0.2) and Seurat(v4.0.6) package are required to test the code.
+2.ArchR (v1.0.2) and Seurat (v4.0.6) package are required to test the code.
 3.No non-standard hardware is required.
 
 ### Installation guide ###
-1.Don't need to install in R environment
+1.No need to install in an R environment.
+
+### Expected run time ###
+1.The expected construction time for GRNs is approximately 30 minutes.
 
 ### STEP0: Example datasets
 
