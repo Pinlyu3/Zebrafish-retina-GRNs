@@ -208,7 +208,8 @@ save(NMDA_PtoG,file='NMDA_PtoG_July23')
 ###
 
 ### Project_merge_sub_pre_cl is the ArchR object ####
-All_Peaks_GRNs = Project_merge_sub_pre_cl@peakSet
+
+load("All_Peaks_GRNs")"
 
 
 ###
