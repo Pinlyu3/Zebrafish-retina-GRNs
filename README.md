@@ -1,12 +1,20 @@
 # Zebrafish retina GRNs
 
-The codes for constructing GRNs of MG cell groups between LD and NMDA conditions.
+The test codes for constructing GRNs of MG cell groups between LD and NMDA conditions.
+
+### System requirements ###
+1.The code can be run on any operating system that has R installed.
+2.ArchR(v1.0.2) and Seurat(v4.0.6) package are required to test the code.
+3.No non-standard hardware is required.
+
+### Installation guide ###
+1.Don't need to install in R environment
 
 ### STEP0: Example datasets
 
 We use LD and NMDA scRNAseq/scATACseq datasets as example datasets.
 
-All example files can be downloaded in the following link: [Datasets](https://drive.google.com/drive/folders/1yYuWGWyFog8xhMxbpK26uhdEOh620sz3?usp=sharing)
+All example files can be downloaded in the Zenodo or in the following link: [Datasets](https://drive.google.com/drive/folders/1yYuWGWyFog8xhMxbpK26uhdEOh620sz3?usp=sharing)
 
 ### STEP1: Inferring activators and repressors by expression and motif activity
 ``` r
