@@ -17,7 +17,8 @@ The test codes for constructing GRNs of MG cell groups between LD and NMDA condi
 
 We use LD and NMDA scRNAseq/scATACseq datasets as example datasets.
 
-All example files can be downloaded in the Zenodo or in the following link: [Datasets](https://drive.google.com/drive/folders/1yYuWGWyFog8xhMxbpK26uhdEOh620sz3?usp=sharing)
+All example files can be downloaded in the Zenodo (https://doi.org/10.5281/zenodo.8317611)
+or in the following link: [Datasets](https://drive.google.com/drive/folders/1yYuWGWyFog8xhMxbpK26uhdEOh620sz3?usp=sharing)
 
 ### STEP1: Inferring activators and repressors by expression and motif activity
 ``` r
