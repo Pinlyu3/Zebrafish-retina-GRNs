@@ -11,7 +11,7 @@ The test codes for constructing GRNs of MG cell groups between LD and NMDA condi
 1.No need to install in an R environment.
 
 ### Expected run time ###
-1.The expected construction time for GRNs is approximately 30 minutes.
+1.The expected construction time for GRNs is approximately 2.5h.
 
 ### STEP0: Example datasets
 
