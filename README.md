@@ -555,7 +555,7 @@ Match_motifs <- function(Globle_need_Peak,Globle_need_Motif,Fish_combined){
     ############
     Globle_need_Peak_1 = Merge_peaks(Globle_need_Peak,extend=150)
     ############
-    ####Globle_need_Peak_2 = Merge_GRlist(Globle_need_Peak_1)
+    Globle_need_Peak_2 = Merge_GRlist(Globle_need_Peak_1)
     ############ filter the Fish_combined #####
     k = which(names(Fish_combined) %in% Globle_need_Motif$ID == T)
     Fish_combined_cl = Fish_combined[k]
@@ -926,7 +926,6 @@ Convert_to_double_and_filterbygenes <- function(GRNs,Genes_need){
 
 LD_GRNs_MG_double = Convert_to_double_and_filterbygenes(LD_GRNs,Genes_need)
 NMDA_GRNs_MG_double = Convert_to_double_and_filterbygenes(NMDA_GRNs,Genes_need)
-
 
 #####
 ##### Next load the log2 fold change files between LD and NMDA #######
