@@ -490,7 +490,6 @@ Get_all_need_Motif_tag <- function(x,y,cutoff=0.05){
 Globle_need_Motif = Get_all_need_Motif_tag(LD_NMDA_TF_activity,InjuryDev_TF_activity,0.05)
 
 ####
-setwd("/zp1/data/plyu3/Fish_muti_omic_dev/merge_ATAC")
 
 load(file='Dev_PtoG_Ann_July23')
 load(file='Injury_PtoG_Ann_July23')
@@ -516,9 +515,6 @@ Get_all_need_Peak_tag <- function(x1,x2,x3,x4){
 ######## Globle_need_Peak is the union regions of all these peaks ####
 Globle_need_Peak = Get_all_need_Peak_tag(x1,x2,x3,x4)
 ######## 
-
-
-setwd("/zp1/data/plyu3/Fish_muti_omic_dev/merge_ATAC")
 
 #### Fish_combined_motifs is the PWMList which stored Fish PMW matrix #####
 load(file='Fish_combined_motifs') ### Fish_combined ####
