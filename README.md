@@ -839,6 +839,38 @@ Combined_all_things <- function(GG_network,PG_cor,TP_cor,Foot){
     return(merged_table3)
 }
 
+All_footprint_to_peaks <- function(footprint_GR,peak_table){
+	  ####### extend to 801bp #################
+	  peak_table_GR = GRanges(peak_table$Peak)
+	  start(peak_table_GR) = start(peak_table_GR)-150
+	  end(peak_table_GR) = end(peak_table_GR)+150
+	  #######
+	  #######
+	  ####### Next we extend the peak_table #######
+	  ####### find the overlaps with peaks and footprint ####
+	  ####### left is peak right is the footprint ###
+	  countIndex = findOverlaps(peak_table_GR,footprint_GR)
+	  ####### 
+	  left_table = peak_table[queryHits(countIndex),]
+	  #######
+	  right_table = data.frame(footprint_GR)[subjectHits(countIndex),]
+	  ####### Clean_left_table ########
+	  left_table_cl = left_table[,c("Index","Peak","Class","PtoG_cor","Gene")]
+	  colnames(left_table_cl) <- c("PtoG_Index","Peak","PtoG_Class","PtoG_cor","Target")
+	  ### 
+	  k = which(left_table_cl$PtoG_cor == 'ND')
+	  left_table_cl$PtoG_cor[k] = 0
+	  left_table_cl$PtoG_cor = round(as.numeric(left_table_cl$PtoG_cor),3)
+	  ####### head(right_table)
+	  right_table$footprint = paste0(right_table$seqnames,':',right_table$start,'-',right_table$end)
+	  right_table_cl = right_table[,c('motif','footprint','mid_score','left_delta','right_delta')]
+	  colnames(right_table_cl) <- c("Motif",'Footprint_region','Footprint_Mid',"Footprint_Left_del","Footprint_Right_del")
+	  #######
+	  merge_table = cbind(left_table_cl,right_table_cl)
+	  #######
+	  return(merge_table)
+}
+
 
 load("Globle_motif_cleanedByNMDA") ### from Step3 ####
 load("LD_NMDA_TF_activity_July23") ### from Step1 ####
