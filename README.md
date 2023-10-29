@@ -26,7 +26,7 @@ or in the following link: [Datasets](https://drive.google.com/drive/folders/1yYu
 load("Fish_All_motifs_table_short")
 ### load chromVAR object generated from chromVAR ###################
 load(file='Injury_Motif_seurat_July23')
-### 
+
 LD_M_seurat = Injury_Motif_seurat[,which(Injury_Motif_seurat$orig.ident == "LD")]
 NMDA_M_seurat = Injury_Motif_seurat[,which(Injury_Motif_seurat$orig.ident == "NMDA")]
 
@@ -35,15 +35,11 @@ load("Merge_seurat_precursor_final")
 LD_seurat = Merge_seurat_precursor_final[,which(Merge_seurat_precursor_final$Condition == "LD")]
 NMDA_seurat = Merge_seurat_precursor_final[,which(Merge_seurat_precursor_final$Condition == "NMDA")]
 
-### 
 LD_RNA_mat = LD_seurat[['RNA']]@data
 NMDA_RNA_mat = NMDA_seurat[['RNA']]@data
 
-######
 LD_Motif_mat = LD_M_seurat[['RNA']]@data
 NMDA_Motif_mat = NMDA_M_seurat[['RNA']]@data
-
-######
 
 LD_Corr_RNA_Motif_Res = Get_corr_gene_motif(LD_Motif_mat,LD_RNA_mat,Fish_All_motifs_table_short)
 NMDA_Corr_RNA_Motif_Res = Get_corr_gene_motif(NMDA_Motif_mat,NMDA_RNA_mat,Fish_All_motifs_table_short)
@@ -59,7 +55,6 @@ LD_NMDA_TF_activity <- rbind(LD_Corr_RNA_Motif_Res,NMDA_Corr_RNA_Motif_Res)
 library(writexl)
 write_xlsx(LD_NMDA_TF_activity, path = "LD_NMDA_TFs_gene_motif_corr.xlsx")
 
-#######
 load("LD_Corr_RNA_Motif_Res_July23")
 load("NMDA_Corr_RNA_Motif_Res_July23")
 
@@ -69,7 +64,6 @@ colnames(NMDA_Corr_RNA_Motif_Res)[c(3)] <- paste("Gene_Motif",colnames(NMDA_Corr
 LD_NMDA_TF_activity <- rbind(LD_Corr_RNA_Motif_Res,NMDA_Corr_RNA_Motif_Res)
 save(LD_NMDA_TF_activity,file='LD_NMDA_TF_activity_July23')
 
-####
 ```
 
 
@@ -85,8 +79,6 @@ NMDA_PtoG = Get_PtoG_fun(NMDA_project,Peakmat_all=GRanges(All_Peaks_GRNs))
 save(LD_PtoG,file='LD_PtoG_July23')
 save(NMDA_PtoG,file='NMDA_PtoG_July23')
 
-### LD_PtoG_July23 and NMDA_PtoG_July23 are in the shared links ####
-
 ```
 
 
@@ -99,8 +91,6 @@ save(NMDA_PtoG,file='NMDA_PtoG_July23')
 ### Project_merge_sub_pre_cl is the ArchR object ####
 
 load("All_Peaks_GRNs")
-
-###
 
 GTF_TSS_table_res = Get_TSS_table(Gtfs_protein_trans_GR_TSS,All_Peaks_GRNs,extend=500)
 GTF_Body_table_res = Get_Body_table(Gtfs_protein_trans_GR_Body,All_Peaks_GRNs)
@@ -131,7 +121,6 @@ load("InjuryDev_TF_activity_July23")
 Globle_need_Motif = Get_all_need_Motif_tag(LD_NMDA_TF_activity,InjuryDev_TF_activity,0.05)
 
 ####
-
 load(file='Dev_PtoG_Ann_July23')
 load(file='Injury_PtoG_Ann_July23')
 load(file='LD_PtoG_Ann_July23')
@@ -142,11 +131,9 @@ x2 = Injury_PtoG_Ann
 x3 = LD_PtoG_Ann
 x4 = NMDA_PtoG_Ann
 
-########
 ######## merge all peak regions to match TF binding mtoifs ##########
 ######## Globle_need_Peak is the union regions of all these peaks ####
 Globle_need_Peak = Get_all_need_Peak_tag(x1,x2,x3,x4)
-######## 
 
 #### Fish_combined_motifs is the PWMList which stored Fish PMW matrix #####
 load(file='Fish_combined_motifs') ### Fish_combined ####
@@ -155,9 +142,7 @@ load(file='Fish_combined_motifs') ### Fish_combined ####
 #### PWMatrixList of length 9155
 #### names(9155): M00001 M00002 M00004 ... M11389_2.00 M11390_2.00 M11491_2.00 
 
-#### 
 Globle_motif_footprint <- Match_motifs(Globle_need_Peak,Globle_need_Motif,Fish_combined)
-####
 save(Globle_motif_footprint,file='Globle_motif_footprint_July23')
 
 #### Next using LD or NMDA footprint to filter motif binding sites ######
@@ -169,12 +154,6 @@ save(Globle_motif_footprint,file='Globle_motif_footprint_July23')
 #### loading corrected signal by rtracklayer #####
 NMDA_injury_footprint <- rtracklayer::import.bw("NMDA_injury_MG_fragments_GR_bam_tab_s_corrected.bw")
 LD_injury_footprint <- rtracklayer::import.bw("LD_injury_MG_fragments_GR_bam_tab_s_corrected.bw")
-
-####
-
-#####
-#####
-#####
 
 Globle_motif_cleanedByLD = Get_footprint_Score_all_para(Globle_motif_footprint,footprint_signal=LD_injury_footprint)
 save(Globle_motif_cleanedByLD,file='Globle_motif_cleanedByLD')
@@ -209,12 +188,10 @@ custom_client = Client(local_cluster)
 network = grnboost2(expression_data=ex_matrix,tf_names=tf_names,client_or_address=custom_client)
 network.head()
 network.to_csv('injury_LD_network_new.tsv', sep='\t', header=False, index=False)
-
 ```
 
 ``` r
 ### calculate the gene-gene correlation ###
-
 
 library(reshape2)
 LD_mat = read.table("injury.LD.mat.txt",sep='\t',header=T)
@@ -235,8 +212,6 @@ m = match(LD_network$index,LD_Corr_res_index)
 LD_network$Corr = LD_Corr_res_cl$value[m]
 
 save(LD_network,file="LD_network")
-
-#### LD_network and NMDA_network are in the shared links ####
 ```
 
 
@@ -270,7 +245,6 @@ Foot = Globle_motif_cleanedByLD
 
 LD_GRNs = Combined_all_things(GG_network,PG_cor,TP_cor,Foot)
 save(LD_GRNs,file='LD_GRNs_July23')
-
 ```
 
 
@@ -296,9 +270,7 @@ NMDA_GRNs_MG_triple = Convert_to_triple_and_filterbygenes(NMDA_GRNs,Genes_need)
 LD_GRNs_MG_double = Convert_to_double_and_filterbygenes(LD_GRNs,Genes_need)
 NMDA_GRNs_MG_double = Convert_to_double_and_filterbygenes(NMDA_GRNs,Genes_need)
 
-#####
 ##### Next load the log2 fold change files between LD and NMDA #######
-#####
 
 ##### Differential DARs between LD and NMDA
 load("DARs_Combined_LDvsNMDA_July23")
