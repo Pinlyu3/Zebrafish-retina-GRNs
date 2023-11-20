@@ -17,8 +17,7 @@ The test codes for constructing GRNs of MG cell groups between LD and NMDA condi
 
 We use LD and NMDA scRNAseq/scATACseq datasets as example datasets.
 
-All example files can be downloaded in the Zenodo (https://doi.org/10.5281/zenodo.8317611)
-or in the following link: [Datasets](https://drive.google.com/drive/folders/1yYuWGWyFog8xhMxbpK26uhdEOh620sz3?usp=sharing)
+All example files can be downloaded in the following link: [Datasets](https://drive.google.com/drive/folders/1yYuWGWyFog8xhMxbpK26uhdEOh620sz3?usp=sharing)
 
 ### STEP1: Inferring activators and repressors by expression and motif activity
 ``` r
@@ -72,6 +71,8 @@ save(LD_NMDA_TF_activity,file='LD_NMDA_TF_activity_July23')
 ### call peaks using ArchR then calcualte PtoG correlations ###
 ### LD_project is the ArchR object ####
 ### NMDA_project is the ArchR object ##
+
+load("All_Peaks_GRNs")
 
 LD_PtoG = Get_PtoG_fun(LD_project,Peakmat_all=GRanges(All_Peaks_GRNs))
 NMDA_PtoG = Get_PtoG_fun(NMDA_project,Peakmat_all=GRanges(All_Peaks_GRNs))
@@ -165,30 +166,6 @@ save(Globle_motif_cleanedByNMDA,file='Globle_motif_cleanedByNMDA')
 
 
 ### STEP4: TF-target correlation 
-``` python
-import os
-import pandas as pd
-from arboreto.algo import grnboost2, genie3
-from arboreto.utils import load_tf_names
-
-import pandas as pd
-import arboreto
-import dask
-from dask.distributed import Client
-from distributed import LocalCluster, Client
-
-ex_matrix = pd.read_csv("injury.LD.mat.txt", sep='\t')
-col_sums = ex_matrix.sum(axis=0)
-ex_matrix = ex_matrix.loc[:, col_sums != 0]
-tf_names = load_tf_names("GRNs_TF.txt")
-
-local_cluster = LocalCluster(n_workers=30,threads_per_worker=1)
-custom_client = Client(local_cluster)
-
-network = grnboost2(expression_data=ex_matrix,tf_names=tf_names,client_or_address=custom_client)
-network.head()
-network.to_csv('injury_LD_network_new.tsv', sep='\t', header=False, index=False)
-```
 
 ``` r
 ### calculate the gene-gene correlation ###
@@ -202,6 +179,7 @@ LD_Corr_res = sparse.cor3(LD_mat_cl)
 LD_Corr_res = melt(LD_Corr_res)
 save(LD_Corr_res,file="LD_Corr_res")
 
+#### injury_LD_network_new.tsv is output from grnboost2 in arboreto package #####
 LD_network <- read.table("injury_LD_network_new.tsv",sep="\t",header=F)
 colnames(LD_network) <- c("TF","Gene","Score")
 LD_network$index = paste(LD_network$TF,LD_network$Gene,sep="-->")
