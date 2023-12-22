@@ -5,8 +5,8 @@ The test codes for constructing GRNs of MG cell groups between LD and NMDA condi
 ### Datasets ###
 The fragment files of snATACseq can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing)
 
-The annotated snRNAseq single cells objects in Figure5A can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing)
-
+The annotated snRNAseq single cells objects in Figure5A can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing).The cell type annotations are in the "celltype" column.
+please load the object with "readRDS"command.
 
 ### System requirements ###
 1.The code can be run on any operating system that has R installed.
