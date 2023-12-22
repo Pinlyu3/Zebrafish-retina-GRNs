@@ -5,7 +5,7 @@ The test codes for constructing GRNs of MG cell groups between LD and NMDA condi
 ### Datasets ###
 The fragment files of snATACseq can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing)
 
-The annotated snRNAseq single cell annotation showing in Figure5A can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing).The cell type annotations are in the "celltype" column.
+The annotated snRNAseq single cell annotation and UMAPs in Figure5A can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing).The cell type annotations are in the "celltype" column.
 Please load the object with "readRDS" command.
 
 ### System requirements ###
