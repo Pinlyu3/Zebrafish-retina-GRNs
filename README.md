@@ -2,6 +2,11 @@
 
 The test codes for constructing GRNs of MG cell groups between LD and NMDA conditions.
 
+### datasets ###
+The fragment files of snATACseq can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing)
+
+
+
 ### System requirements ###
 1.The code can be run on any operating system that has R installed.
 2.ArchR (v1.0.2) and Seurat (v4.0.6) package are required to test the code.
