@@ -8,6 +8,9 @@ The fragment files of snATACseq can be downloaded in the following link:[Dataset
 
 The seurat objects with corrected expression matrix, cell annotation and UMAPs in Figure5A can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing).The cell type annotations are in the "celltype" column. Please load the object with "readRDS" command.
 
+The seurat objects with corrected expression matrix, cell annotation and UMAPs in FigureS4A can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing).The cell type annotations are in the "celltype" column. Please load the object with "readRDS" command. The UMAPs coordinates are in the "UMAP_1" and "UMAP_2" columns in the meta.data.
+
+
 ### System requirements
 
 1.The code can be run on any operating system that has R installed. 2.ArchR (v1.0.2) and Seurat (v4.0.6) package are required to test the code. 3.No non-standard hardware is required.
