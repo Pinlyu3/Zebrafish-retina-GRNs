@@ -2,21 +2,22 @@
 
 The test codes for constructing GRNs of MG cell groups between LD and NMDA conditions.
 
-### Datasets ###
+### Datasets
+
 The fragment files of snATACseq can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing)
 
-The seurat objects with corrected expression matrix, cell annotation and UMAPs in Figure5A can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing).The cell type annotations are in the "celltype" column.
-Please load the object with "readRDS" command.
+The seurat objects with corrected expression matrix, cell annotation and UMAPs in Figure5A can be downloaded in the following link:[Datasets](https://drive.google.com/drive/folders/1N646KmKq8NAB-_nISVeIqu30YcOannvy?usp=sharing).The cell type annotations are in the "celltype" column. Please load the object with "readRDS" command.
 
-### System requirements ###
-1.The code can be run on any operating system that has R installed.
-2.ArchR (v1.0.2) and Seurat (v4.0.6) package are required to test the code.
-3.No non-standard hardware is required.
+### System requirements
 
-### Installation guide ###
+1.The code can be run on any operating system that has R installed. 2.ArchR (v1.0.2) and Seurat (v4.0.6) package are required to test the code. 3.No non-standard hardware is required.
+
+### Installation guide
+
 1.No need to install in an R environment.
 
-### Expected run time ###
+### Expected run time
+
 1.The expected construction time for GRNs is approximately 2.5h.
 
 ### STEP0: Example datasets
@@ -26,6 +27,7 @@ We use LD and NMDA scRNAseq/scATACseq datasets as example datasets.
 All example files can be downloaded in the following link: [Datasets](https://drive.google.com/drive/folders/1yYuWGWyFog8xhMxbpK26uhdEOh620sz3?usp=sharing)
 
 ### STEP1: Inferring activators and repressors by expression and motif activity
+
 ``` r
 ### load fish motif name and gene name ###
 load("Fish_All_motifs_table_short")
@@ -68,11 +70,10 @@ colnames(NMDA_Corr_RNA_Motif_Res)[c(3)] <- paste("Gene_Motif",colnames(NMDA_Corr
 
 LD_NMDA_TF_activity <- rbind(LD_Corr_RNA_Motif_Res,NMDA_Corr_RNA_Motif_Res)
 save(LD_NMDA_TF_activity,file='LD_NMDA_TF_activity_July23')
-
 ```
 
-
 ### STEP2: Identifying Cis-regulatory elements
+
 ``` r
 ### call peaks using ArchR then calcualte PtoG correlations ###
 ### LD_project is the ArchR object ####
@@ -85,10 +86,7 @@ NMDA_PtoG = Get_PtoG_fun(NMDA_project,Peakmat_all=GRanges(All_Peaks_GRNs))
 
 save(LD_PtoG,file='LD_PtoG_July23')
 save(NMDA_PtoG,file='NMDA_PtoG_July23')
-
 ```
-
-
 
 ``` r
 ###
@@ -112,11 +110,10 @@ save(LD_PtoG_Ann,file='LD_PtoG_Ann_July23')
 save(NMDA_PtoG_Ann,file='NMDA_PtoG_Ann_July23')
 ```
 
-
-
 ### STEP3: Predicting TF Binding Sites
 
-#### The pipline of TOBIAS please see: https://github.com/Pinlyu3/IReNA-v2 
+#### The pipline of TOBIAS please see: <https://github.com/Pinlyu3/IReNA-v2>
+
 ``` r
 #### select the activator and repressor motifs which passed the cutoff ####
 #### cutoff = 0.05 #####
@@ -167,11 +164,9 @@ save(Globle_motif_cleanedByLD,file='Globle_motif_cleanedByLD')
 
 Globle_motif_cleanedByNMDA = Get_footprint_Score_all_para(Globle_motif_footprint,footprint_signal=NMDA_injury_footprint)
 save(Globle_motif_cleanedByNMDA,file='Globle_motif_cleanedByNMDA')
-
 ```
 
-
-### STEP4: TF-target correlation 
+### STEP4: TF-target correlation
 
 ``` r
 ### calculate the gene-gene correlation ###
@@ -198,9 +193,8 @@ LD_network$Corr = LD_Corr_res_cl$value[m]
 save(LD_network,file="LD_network")
 ```
 
-
-
 ### STEP5: Construction of TF-peak-target links
+
 ``` r
 #### load footprint, motif activity, peak-gene, and gene-gene correlations
 
@@ -231,8 +225,8 @@ LD_GRNs = Combined_all_things(GG_network,PG_cor,TP_cor,Foot)
 save(LD_GRNs,file='LD_GRNs_July23')
 ```
 
-
 ### STEP6: Identification of enriched gene regulatory sub-networks
+
 ``` r
 #### All_GRNs_need_Genes_July23 is the genes which expressed in MG group cells #####
 load("All_GRNs_need_Genes_July23")
@@ -272,8 +266,3 @@ library(writexl)
 write_xlsx(LD_GRNs_MG_triple_specific, path = "LD_GRNs_MG_triple_specific.xlsx")
 write_xlsx(NMDA_GRNs_MG_triple_specific, path = "NMDA_GRNs_MG_triple_specific.xlsx")
 ```
-
-
-
-
-
